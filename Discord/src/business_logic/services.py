@@ -218,3 +218,37 @@ class DataImportService:
             self.session.commit()
             return member
         return None
+    
+    def add_member_to_server(self, server_id: int, email: str, nickname: str, name: str):
+        user = self.user_repo.get_by_email(email)
+        
+        if not user:
+            user = User(name=name, email=email, status="Online")
+            self.session.add(user)
+            self.session.flush()
+            
+        existing_member = self.session.query(Member).filter_by(
+            user_id=user.id, 
+            server_id=server_id
+        ).first()
+        
+        if existing_member:
+            raise ValueError(f"Користувач з email {email} вже є учасником цього сервера!")
+
+        try:
+            new_member = Member(
+                user_id=user.id,
+                server_id=server_id,
+                nickname=nickname,
+                is_muted=False
+            )
+            self.session.add(new_member)
+            
+            server = self.get_server_by_id(server_id)
+            server.member_count += 1
+            
+            self.session.commit()
+            return new_member
+        except Exception as e:
+            self.session.rollback()
+            raise e

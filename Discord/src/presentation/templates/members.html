@@ -12,10 +12,27 @@
             <h1 class="page-title">Учасники сервера: {{ server.name }}</h1>
             <p class="page-subtitle">Всього зареєстровано: <strong>{{ members|length }}</strong></p>
         </div>
-        <a href="{{ url_for('index') }}" class="btn-back">
-            <i class="fas fa-chevron-left"></i> До серверів
+        <a href="{{ url_for('view_channels', server_id=server.id) }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Назад до каналів
         </a>
     </header>
+
+    <section class="add-member-card">
+        <header class="card-header-sm">
+            <h3><i class="fas fa-user-plus"></i> Запросити нового учасника</h3>
+        </header>
+        <form action="{{ url_for('add_member', server_id=server.id) }}" method="POST" class="add-member-form">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email користувача" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-user-tag"></i>
+                <input type="text" name="nickname" placeholder="Нікнейм на сервері" required>
+            </div>
+            <button type="submit" class="btn-add-confirm">Додати на сервер</button>
+        </form>
+    </section>
 
     <div class="members-table-card">
         <table class="discord-style-table">
@@ -46,7 +63,7 @@
                             {% for role in member.roles %}
                                 <span class="role-tag">{{ role.name }}</span>
                             {% else %}
-                                <span class="no-role">Без ролі</span>
+                                <span class="no-role">@everyone</span>
                             {% endfor %}
                         </div>
                     </td>
@@ -60,14 +77,14 @@
                         <div class="table-actions">
                             <form action="{{ url_for('edit_member', member_id=member.id) }}" method="POST" class="inline-edit-form">
                                 <input type="text" name="nickname" value="{{ member.nickname }}" class="tiny-input" required>
-                                <button type="submit" class="icon-action save" title="Зберегти">
+                                <button type="submit" class="icon-action save" title="Зберегти нік">
                                     <i class="fas fa-check"></i>
                                 </button>
                             </form>
                             <a href="{{ url_for('delete_member', member_id=member.id) }}" 
                                 class="icon-action kick" 
                                 onclick="return confirm('Вигнати учасника {{ member.nickname }}?')"
-                                title="Kick">
+                                title="Kick (Видалити)">
                                 <i class="fas fa-user-slash"></i>
                             </a>
                         </div>

@@ -145,3 +145,24 @@ def edit_member(member_id):
         flash("Нікнейм не може бути порожнім!", "warning")
         
     return redirect(url_for('view_members', server_id=member.server_id))
+
+@app.route('/server/<int:server_id>/member/add', methods=['POST'])
+def add_member(server_id):
+    """Обробка форми додавання нового учасника"""
+    email = request.form.get('email')
+    nickname = request.form.get('nickname')
+    name = request.form.get('name', nickname) 
+    
+    if not email or not nickname:
+        flash("Пошта та нікнейм обов'язкові!", "danger")
+        return redirect(url_for('view_members', server_id=server_id))
+        
+    try:
+        service.add_member_to_server(server_id, email, nickname, name)
+        flash(f"Учасника {nickname} успішно додано на сервер!", "success")
+    except ValueError as e:
+        flash(str(e), "danger")
+    except Exception:
+        flash("Помилка при додаванні учасника.", "danger")
+        
+    return redirect(url_for('view_members', server_id=server_id))
