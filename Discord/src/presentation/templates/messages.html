@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat_new.css') }}?v=6">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="chat-app-wrapper">
+    <div class="chat-layout">
+        <section class="chat-main">
+            <header class="chat-top-bar">
+                <div class="header-left">
+                    <a href="{{ url_for('view_channels', server_id=channel.server_id) }}" class="back-link" title="Назад до каналів">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    
+                    <i class="fas fa-hashtag hash-icon"></i>
+                    <h2 class="channel-title">{{ channel.title }}</h2>
+                </div>
+                <div class="header-right">
+                    <i class="fas fa-bell header-tool"></i>
+                    <i class="fas fa-thumbtack header-tool"></i>
+                    <i class="fas fa-users header-tool mobile-only"></i>
+                </div>
+            </header>
+
+            <div class="messages-scroll-area">
+                <div class="messages-wrapper">
+                    {% for msg in messages %}
+                    <article class="message-card">
+                        <div class="message-avatar">
+                            {{ msg.author.nickname[0] | upper }}
+                        </div>
+                        <div class="message-body">
+                            <header class="message-header">
+                                <span class="author-name">{{ msg.author.nickname }}</span>
+                                <time class="message-time">{{ msg.timestamp.strftime('%H:%M') }}</time>
+                            </header>
+                            <div class="message-text-content">
+                                {{ msg.content }}
+                            </div>
+                        </div>
+                        <div class="message-actions-overlay">
+                            <a href="{{ url_for('delete_message', message_id=msg.id) }}" 
+                                class="action-btn delete" 
+                                onclick="return confirm('Видалити повідомлення?')" 
+                                title="Видалити">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </article>
+                    {% else %}
+                    <div class="chat-welcome">
+                        <div class="welcome-icon">#</div>
+                        <h1>Ласкаво просимо до #{{ channel.title }}!</h1>
+                        <p>Це початок історії каналу #{{ channel.title }}.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <footer class="chat-input-area">
+                <form action="{{ url_for('view_messages', channel_id=channel.id) }}" method="POST" class="message-form">
+                    <div class="input-container-pill">
+                        <div class="author-picker">
+                            <select name="author_id" class="custom-select" required>
+                                {% for m in channel.server.members %}
+                                    <option value="{{ m.id }}">{{ m.nickname }}</option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down select-icon"></i>
+                        </div>
+                        <input type="text" name="content" class="main-msg-input" placeholder="Написати у #{{ channel.title }}" required autocomplete="off">
+                        <button type="submit" class="send-icon-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </footer>
+        </section>
+
+        <aside class="members-sidebar">
+            <h3 class="members-group-label">Учасники — {{ channel.server.members|length }}</h3>
+            <div class="members-list">
+                {% for member in channel.server.members %}
+                <div class="member-card">
+                    <div class="member-avatar-mini">
+                        {{ member.nickname[0] | upper }}
+                        <span class="status-indicator {{ 'online' if member.user.status == 'Online' else 'offline' }}"></span>
+                    </div>
+                    <span class="member-nick">{{ member.nickname }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

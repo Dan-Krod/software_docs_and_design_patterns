@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/channels.css') }}?v=3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="channels-app-container">
+    <aside class="channels-nav-sidebar">
+        <header class="sidebar-header">
+            <div class="sidebar-header-left">
+                <a href="{{ url_for('index') }}" class="back-to-servers" title="До списку серверів">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <h1 class="server-name-display">{{ server.name }}</h1>
+            </div>
+            <i class="fas fa-chevron-down header-dropdown-icon"></i>
+        </header>
+
+        <div class="channels-scroll-area">
+            <div class="category-item">
+                <span class="category-label"><i class="fas fa-chevron-down"></i> Текстові канали</span>
+                <div class="channels-sub-list">
+                    {% for channel in channels %}
+                    <div class="channel-nav-item">
+                        <a href="{{ url_for('view_messages', channel_id=channel.id) }}" class="channel-link">
+                            <i class="fas fa-hashtag"></i>
+                            <span class="nav-title">{{ channel.title }}</span>
+                        </a>
+                        <div class="nav-actions">
+                            <a href="{{ url_for('delete_channel', channel_id=channel.id) }}" 
+                                onclick="return confirm('Видалити канал?')" class="nav-icon-btn delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="management-area">
+        <div class="management-grid">
+            <section class="admin-card create-card">
+                <header class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Новий канал</h3>
+                </header>
+                <form action="{{ url_for('add_channel', server_id=server.id) }}" method="POST" class="compact-form">
+                    <div class="form-group-inline">
+                        <div class="input-container">
+                            <i class="fas fa-hashtag"></i>
+                            <input type="text" name="title" placeholder="назва-каналу" required>
+                        </div>
+                        <div class="input-container slowmode">
+                            <i class="fas fa-clock"></i>
+                            <input type="number" name="slow_mode" value="0" placeholder="0s">
+                        </div>
+                        <button type="submit" class="btn-create-small">Створити</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="admin-card stats-card">
+                <header class="card-header">
+                    <h3><i class="fas fa-info-circle"></i> Про сервер</h3>
+                </header>
+                <div class="stats-body">
+                    <div class="stat-row">
+                        <span class="lbl">ID Об'єкта:</span>
+                        <span class="val">#{{ server.id }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="lbl">Інвайт-код:</span>
+                        <span class="val highlight">{{ server.invite_code }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="lbl">Учасників:</span>
+                        <span class="val">{{ server.member_count }} 👥</span>
+                    </div>
+                    <div class="stats-actions" style="margin-top: 20px;">
+                        <a href="{{ url_for('view_members', server_id=server.id) }}" class="btn-members-link">
+                            <i class="fas fa-users-cog"></i> Керувати учасниками
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="placeholder-view">
+            <div class="placeholder-icon"><i class="fas fa-comments"></i></div>
+            <h2>Оберіть канал для керування</h2>
+            <p>Ви можете переглядати повідомлення, редагувати права доступу або налаштовувати Slow Mode.</p>
+        </div>
+    </main>
+</div>
+{% endblock %}

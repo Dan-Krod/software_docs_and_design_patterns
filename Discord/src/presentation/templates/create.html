@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}?v=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="form-page-container">
+    <div class="form-card">
+        <header class="form-header">
+            <h2 class="form-title">Створити сервер</h2>
+            <p class="form-subtitle">Ваш сервер — це місце, де ви з друзями проводите час.</p>
+        </header>
+
+        <form method="POST" class="discord-form">
+            <div class="form-group">
+                <label for="name" class="form-label">Назва сервера</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-signature"></i>
+                    <input type="text" class="form-input" id="name" name="name" 
+                            placeholder="напр. IT Community" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="invite_code" class="form-label">Інвайт-код</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-link"></i>
+                    <input type="text" class="form-input" id="invite_code" name="invite_code" 
+                            placeholder="напр. AL-6981" required>
+                </div>
+            </div>
+            
+            <footer class="form-footer">
+                <a href="{{ url_for('index') }}" class="btn-link">Скасувати</a>
+                <button type="submit" class="btn-main">Створити сервер</button>
+            </footer>
+        </form>
+    </div>
+</div>
+{% endblock %}
