@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from src.business_logic.services import DataImportService
-from src.domain.models import TextChannel, Message 
+from src.domain.models import TextChannel, Message, User
+from functools import wraps
+from flask import session
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(current_dir, 'templates')
@@ -15,12 +17,23 @@ app.secret_key = 'super_secret_discord_clone_key_2026'
 
 service: DataImportService = None
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Будь ласка, спочатку увійдіть у систему!", "warning")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/')
+@login_required
 def index():
     servers = service.get_all_servers()
     return render_template('index.html', servers=servers)
 
 @app.route('/server/add', methods=['GET', 'POST'])
+@login_required
 def add_server():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -35,6 +48,7 @@ def add_server():
     return render_template('create.html')
 
 @app.route('/server/edit/<int:server_id>', methods=['GET', 'POST'])
+@login_required
 def edit_server(server_id):
     server = service.get_server_by_id(server_id)
     if request.method == 'POST':
@@ -46,11 +60,13 @@ def edit_server(server_id):
     return render_template('edit.html', server=server)
 
 @app.route('/server/delete/<int:server_id>')
+@login_required
 def delete_server(server_id):
     service.delete_server(server_id)
     return redirect(url_for('index'))
 
 @app.route('/server/<int:server_id>/channels')
+@login_required
 def view_channels(server_id):
     """Перегляд усіх каналів конкретного сервера"""
     server = service.get_server_by_id(server_id)
@@ -58,6 +74,7 @@ def view_channels(server_id):
     return render_template('channels.html', server=server, channels=channels)
 
 @app.route('/server/<int:server_id>/channel/add', methods=['POST'])
+@login_required
 def add_channel(server_id):
     title = request.form.get('title')
     slow_mode = request.form.get('slow_mode', 0) 
@@ -77,6 +94,7 @@ def add_channel(server_id):
     return redirect(url_for('view_channels', server_id=server_id))
 
 @app.route('/channel/delete/<int:channel_id>')
+@login_required
 def delete_channel(channel_id):
     channel = service.session.query(TextChannel).get(channel_id)
     sid = channel.server_id
@@ -84,6 +102,7 @@ def delete_channel(channel_id):
     return redirect(url_for('view_channels', server_id=sid))
 
 @app.route('/channel/<int:channel_id>/messages', methods=['GET', 'POST'])
+@login_required
 def view_messages(channel_id):
     """Стрічка повідомлень каналу (Chat View)"""
     channel = service.session.query(TextChannel).get(channel_id)
@@ -99,6 +118,7 @@ def view_messages(channel_id):
     return render_template('messages.html', channel=channel, messages=messages)
 
 @app.route('/message/delete/<int:message_id>')
+@login_required
 def delete_message(message_id):
     msg = service.session.query(Message).get(message_id)
     cid = msg.channel_id
@@ -106,6 +126,7 @@ def delete_message(message_id):
     return redirect(url_for('view_messages', channel_id=cid))
 
 @app.route('/server/<int:server_id>/members')
+@login_required
 def view_members(server_id):
     """Сторінка керування учасниками сервера"""
     server = service.get_server_by_id(server_id)
@@ -117,6 +138,7 @@ def view_members(server_id):
     return render_template('members.html', server=server, members=members)
 
 @app.route('/member/delete/<int:member_id>')
+@login_required
 def delete_member(member_id):
     """Видалення учасника (Kick)"""
     member = service.get_member_by_id(member_id)
@@ -130,6 +152,7 @@ def delete_member(member_id):
     return redirect(url_for('view_members', server_id=server_id))
 
 @app.route('/member/edit/<int:member_id>', methods=['POST'])
+@login_required
 def edit_member(member_id):
     """Оновлення нікнейму учасника"""
     member = service.get_member_by_id(member_id)
@@ -147,6 +170,7 @@ def edit_member(member_id):
     return redirect(url_for('view_members', server_id=member.server_id))
 
 @app.route('/server/<int:server_id>/member/add', methods=['POST'])
+@login_required
 def add_member(server_id):
     """Обробка форми додавання нового учасника"""
     email = request.form.get('email')
@@ -166,3 +190,40 @@ def add_member(server_id):
         flash("Помилка при додаванні учасника.", "danger")
         
     return redirect(url_for('view_members', server_id=server_id))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        user = service.authenticate(email, password)
+        if user:
+            session['user_id'] = user.id
+            session['user_name'] = user.name
+            flash(f"Вітаємо, {user.name}!", "success")
+            return redirect(url_for('index'))
+        
+        flash("Невірний email або пароль", "danger")
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear() 
+    return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        try:
+            service.register_user(name, email, password)
+            flash("Реєстрація успішна! Тепер увійдіть.", "success")
+            return redirect(url_for('login'))
+        except ValueError as e:
+            flash(str(e), "danger")
+            
+    return render_template('register.html')

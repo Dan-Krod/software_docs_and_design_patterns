@@ -17,11 +17,8 @@ class DataImportService:
         for row in raw_data:
             owner = self.user_repo.get_by_email(row['owner_email'])
             if not owner:
-                owner = ServerOwner(
-                    name=row['owner_name'],
-                    email=row['owner_email'],
-                    status="Offline"
-                )
+                owner = ServerOwner(name=row['owner_name'], email=row['owner_email'])
+                owner.set_password('admin123') 
                 self.session.add(owner)
 
             server = self.session.query(Server).filter_by(name=row['server_name']).first()
@@ -249,6 +246,28 @@ class DataImportService:
             
             self.session.commit()
             return new_member
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        
+    def authenticate(self, email, password):
+        user = self.user_repo.get_by_email(email)
+        if user and user.check_password(password):
+            return user
+        return None
+    
+    def register_user(self, name, email, password):
+        existing = self.user_repo.get_by_email(email)
+        if existing:
+            raise ValueError("Ця електронна пошта вже зареєстрована!")
+        
+        new_user = User(name=name, email=email, status="Online", type="user")
+        new_user.set_password(password) 
+        
+        try:
+            self.session.add(new_user)
+            self.session.commit()
+            return new_user
         except Exception as e:
             self.session.rollback()
             raise e

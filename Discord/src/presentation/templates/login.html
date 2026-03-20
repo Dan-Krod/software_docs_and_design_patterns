@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/autorize.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h2>Вітаємо знову!</h2>
+        <p>Ми такі раді, що ви з нами!</p>
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label>Електронна пошта</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-login">Увійти</button>
+            <p class="auth-footer">
+                Потрібен акаунт? <a href="{{ url_for('register') }}">Зареєструватися</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

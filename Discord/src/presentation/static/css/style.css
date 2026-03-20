@@ -147,3 +147,191 @@ body {
     font-size: 0.8rem;
     letter-spacing: 0.3px;
 }
+
+.right-side {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(35, 165, 89, 0.1);
+    color: #23a559;
+    padding: 6px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.create-btn:hover {
+    background: #23a559;
+    color: white;
+}
+
+.user-account-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 24px;
+    background-color: var(--border);
+    margin: 0 8px;
+}
+
+.user-account-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1e1f22;
+    padding: 4px 12px 4px 6px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.user-pill:hover {
+    border-color: var(--accent);
+    background: #313338;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    position: relative;
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 3px solid #1e1f22;
+}
+
+.status-indicator.online { background: #23a559; }
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.user-name {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.user-role {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.logout-btn {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    padding: 8px;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.logout-btn:hover {
+    color: var(--danger);
+    background: rgba(250, 119, 122, 0.1);
+    transform: rotate(180deg); 
+}
+
+.auth-group {
+    display: flex;
+    align-items: center;
+    gap: 20px; 
+}
+
+.login-link {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: var(--transition);
+    opacity: 0.8;
+}
+
+.login-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.register-btn {
+    background-color: var(--text-primary); 
+    color: #23272a; 
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-btn:hover {
+    background-color: #ffffff;
+    color: var(--accent); 
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-container, .register-container {
+    min-height: calc(100vh - 112px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    
+    background: linear-gradient(135deg, #1e1f22 25%, #2b2d31 100%);
+    
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(88, 101, 242, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(88, 101, 242, 0.05) 0%, transparent 20%);
+    
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: var(--accent);
+    filter: blur(150px);
+    opacity: 0.07;
+    top: -200px;
+    left: -200px;
+    border-radius: 50%;
+}
