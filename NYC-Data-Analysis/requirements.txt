@@ -1,0 +1,9 @@
+pandas
+numpy
+argparse
+
+kafka-python
+redis
+
+python-dotenv
+pyyaml
