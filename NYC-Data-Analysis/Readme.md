@@ -200,5 +200,5 @@ docker exec -it nyc-data-analysis-redis-1 redis-cli
 *Перевірка структури даних у хмарній консолі Google. Дані організовані у вигляді дерева з унікальними ключами (MD5-хеш), що забезпечує ідемпотентність записів.*
 
 ### 4\. Обробка помилок та Fallback
-![Firebase Strategy](screenshots/firebase_strategy.png)
+![Firebase Error](screenshots/firebase_error.png)
 *Демонстрація стійкості до відсутності мережі або файлів конфігурації. При помилці автентифікації система автоматично перемикається в режим `[FIREBASE-IMITATION]`, запобігаючи зупинці всього пайплайну.*
