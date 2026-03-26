@@ -3,6 +3,7 @@ from src.strategies.console_strategy import ConsoleStrategy
 from src.strategies.kafka_strategy import KafkaStrategy
 from src.strategies.redis_strategy import RedisStrategy
 from src.strategies.file_strategy import FileStrategy
+from src.strategies.firebase_strategy import FirebaseStrategy
 
 class StrategyFactory:
     @staticmethod
@@ -17,11 +18,13 @@ class StrategyFactory:
         if target == "console":
             return ConsoleStrategy()
         elif target == "file":
-            return FileStrategy
+            return FileStrategy()
         elif target == "kafka":
             return KafkaStrategy()
         elif target == "redis":
             return RedisStrategy()
-
+        elif target == "firebase":
+            return FirebaseStrategy()
+        
         print(f"⚠️ Стратегію {target} не знайдено. Використовую Console.")
         return ConsoleStrategy()

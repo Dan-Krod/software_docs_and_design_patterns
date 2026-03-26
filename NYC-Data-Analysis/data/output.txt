@@ -1,21 +1,11 @@
 --- NYC Death Data Export Start ---
-
 {'Year': 2021, 'Leading Cause': 'Mental and Behavioral Disorders due to Accidental Poisoning and Other Psychoactive Substance Use (F11-F16, F18-F19, X40-X42, X44)', 'Sex': 'Male', 'Race Ethnicity': 'Other Race/ Ethnicity', 'Deaths': '9', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
-
 {'Year': 2021, 'Leading Cause': 'All Other Causes', 'Sex': 'Female', 'Race Ethnicity': 'Not Stated/Unknown', 'Deaths': '102', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
-
 {'Year': 2021, 'Leading Cause': 'Chronic Liver Diseases and Cirrhosis', 'Sex': 'Male', 'Race Ethnicity': 'Not Stated/Unknown', 'Deaths': '16', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
-
 {'Year': 2021, 'Leading Cause': 'Diseases of Heart (I00-I09, I11, I13, I20-I51)', 'Sex': 'Female', 'Race Ethnicity': 'Hispanic', 'Deaths': '1409', 'Death Rate': '111', 'Age Adjusted Death Rate': '95.5'}
-
 {'Year': 2021, 'Leading Cause': 'Influenza (Flu) and Pneumonia (J09-J18)', 'Sex': 'Male', 'Race Ethnicity': 'Not Stated/Unknown', 'Deaths': '16', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
-
 {'Year': 2021, 'Leading Cause': 'Influenza (Flu) and Pneumonia (J09-J18)', 'Sex': 'Female', 'Race Ethnicity': 'Other Race/ Ethnicity', 'Deaths': '4', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
-
 {'Year': 2021, 'Leading Cause': 'Malignant Neoplasms (Cancer: C00-C97)', 'Sex': 'Female', 'Race Ethnicity': 'Hispanic', 'Deaths': '1157', 'Death Rate': '91.2', 'Age Adjusted Death Rate': '80.8'}
-
 {'Year': 2021, 'Leading Cause': 'Covid-19', 'Sex': 'Female', 'Race Ethnicity': 'Hispanic', 'Deaths': '966', 'Death Rate': '76.1', 'Age Adjusted Death Rate': '66.8'}
-
 {'Year': 2021, 'Leading Cause': 'Cerebrovascular Disease (Stroke: I60-I69)', 'Sex': 'Female', 'Race Ethnicity': 'Hispanic', 'Deaths': '265', 'Death Rate': '20.9', 'Age Adjusted Death Rate': '18'}
-
 {'Year': 2021, 'Leading Cause': 'Diseases of Heart (I00-I09, I11, I13, I20-I51)', 'Sex': 'Female', 'Race Ethnicity': 'Not Stated/Unknown', 'Deaths': '113', 'Death Rate': nan, 'Age Adjusted Death Rate': nan}
