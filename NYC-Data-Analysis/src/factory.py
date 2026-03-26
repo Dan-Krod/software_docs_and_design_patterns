@@ -1,8 +1,8 @@
 import json
 from src.strategies.console_strategy import ConsoleStrategy
-from src.strategies.console_strategy import ConsoleStrategy
+from src.strategies.kafka_strategy import KafkaStrategy
+from src.strategies.redis_strategy import RedisStrategy
 from src.strategies.file_strategy import FileStrategy
-
 
 class StrategyFactory:
     @staticmethod
@@ -13,11 +13,15 @@ class StrategyFactory:
             target = config.get("strategy", "console").lower()
         else:
             target = target.lower()
-
+            
         if target == "console":
             return ConsoleStrategy()
         elif target == "file":
-            return FileStrategy()
+            return FileStrategy
+        elif target == "kafka":
+            return KafkaStrategy()
+        elif target == "redis":
+            return RedisStrategy()
 
         print(f"⚠️ Стратегію {target} не знайдено. Використовую Console.")
         return ConsoleStrategy()
