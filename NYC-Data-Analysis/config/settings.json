@@ -1,0 +1,6 @@
+{
+    "strategy": "console",
+    "data_path": "data/nyc_deaths.csv",
+    "kafka_topic": "nyc_data",
+    "redis_key": "death_record"
+}

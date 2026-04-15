@@ -12,3 +12,4 @@ data/*.sqlite3
 .vscode/
 .idea/
 .DS_Store
+firebase.json
