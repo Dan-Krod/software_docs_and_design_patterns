@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/members.css') }}?v=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="members-page-wrapper">
+    <header class="page-header">
+        <div class="header-info">
+            <h1 class="page-title">Учасники сервера: {{ server.name }}</h1>
+            <p class="page-subtitle">Всього зареєстровано: <strong>{{ members|length }}</strong></p>
+        </div>
+        <a href="{{ url_for('view_channels', server_id=server.id) }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Назад до каналів
+        </a>
+    </header>
+
+    <section class="add-member-card">
+        <header class="card-header-sm">
+            <h3><i class="fas fa-user-plus"></i> Запросити нового учасника</h3>
+        </header>
+        <form action="{{ url_for('add_member', server_id=server.id) }}" method="POST" class="add-member-form">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email користувача" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-user-tag"></i>
+                <input type="text" name="nickname" placeholder="Нікнейм на сервері" required>
+            </div>
+            <button type="submit" class="btn-add-confirm">Додати на сервер</button>
+        </form>
+    </section>
+
+    <div class="members-table-card">
+        <table class="discord-style-table">
+            <thead>
+                <tr>
+                    <th>Користувач</th>
+                    <th>Ролі</th>
+                    <th>Дата приєднання</th>
+                    <th>Статус</th>
+                    <th class="actions-col">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td class="user-cell">
+                        <div class="avatar-sm">
+                            {{ member.nickname[0] | upper }}
+                            <span class="status-dot {{ 'online' if member.user.status == 'Online' else 'offline' }}"></span>
+                        </div>
+                        <div class="user-info">
+                            <span class="nick">{{ member.nickname }}</span>
+                            <span class="email">{{ member.user.email }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="roles-wrapper">
+                            {% for role in member.roles %}
+                                <span class="role-tag">{{ role.name }}</span>
+                            {% else %}
+                                <span class="no-role">@everyone</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="date-cell">{{ member.joined_at.strftime('%d.%m.%Y') }}</td>
+                    <td>
+                        <span class="status-text {{ member.user.status.lower() }}">
+                            {{ member.user.status }}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <div class="table-actions">
+                            <form action="{{ url_for('edit_member', member_id=member.id) }}" method="POST" class="inline-edit-form">
+                                <input type="text" name="nickname" value="{{ member.nickname }}" class="tiny-input" required>
+                                <button type="submit" class="icon-action save" title="Зберегти нік">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <a href="{{ url_for('delete_member', member_id=member.id) }}" 
+                                class="icon-action kick" 
+                                onclick="return confirm('Вигнати учасника {{ member.nickname }}?')"
+                                title="Kick (Видалити)">
+                                <i class="fas fa-user-slash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

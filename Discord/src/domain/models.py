@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 Base = declarative_base()
 
@@ -17,6 +18,13 @@ class User(Base):
     email = Column(String(100), unique=True)
     status = Column(String(50))
     type = Column(String(50)) 
+    password_hash = Column(String(200))
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     __mapper_args__ = {
         'polymorphic_identity': 'user',

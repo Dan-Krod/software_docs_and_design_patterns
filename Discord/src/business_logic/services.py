@@ -17,11 +17,8 @@ class DataImportService:
         for row in raw_data:
             owner = self.user_repo.get_by_email(row['owner_email'])
             if not owner:
-                owner = ServerOwner(
-                    name=row['owner_name'],
-                    email=row['owner_email'],
-                    status="Offline"
-                )
+                owner = ServerOwner(name=row['owner_name'], email=row['owner_email'])
+                owner.set_password('admin123') 
                 self.session.add(owner)
 
             server = self.session.query(Server).filter_by(name=row['server_name']).first()
@@ -94,3 +91,183 @@ class DataImportService:
 
         self.session.commit()
         print(f"Data import from {file_path} completed successfully.")
+        
+    def get_all_servers(self):
+        return self.session.query(Server).all()
+
+    def get_server_by_id(self, server_id: int):
+        return self.session.query(Server).get(server_id)
+
+    def add_server(self, name: str, invite_code: str):
+        existing = self.session.query(Server).filter_by(invite_code=invite_code).first()
+        if existing:
+            raise ValueError(f"Код {invite_code} вже зайнятий!")
+
+        try:
+            new_server = Server(
+                name=name, 
+                invite_code=invite_code, 
+                member_count=0
+            )
+            self.session.add(new_server)
+            self.session.commit()
+            return new_server
+        except Exception as e:
+            self.session.rollback()
+            raise e
+
+    def update_server(self, server_id: int, name: str, invite_code: str, member_count: int):
+        server = self.get_server_by_id(server_id)
+        if server:
+            server.name = name
+            server.invite_code = invite_code
+            server.member_count = member_count
+            self.session.commit()
+        return server
+
+    def delete_server(self, server_id: int):
+        server = self.get_server_by_id(server_id)
+        if server:
+            self.session.delete(server)
+            self.session.commit()
+            return True
+        return False
+    
+    def get_server_channels(self, server_id: int):
+        return self.session.query(TextChannel).filter_by(server_id=server_id).all()
+
+    def add_channel_to_server(self, server_id: int, title: str, slow_mode: int = 0):
+        existing = self.session.query(TextChannel).filter_by(
+            server_id=server_id, 
+            title=title
+        ).first()
+        
+        if existing:
+            raise ValueError(f"Канал з назвою '#{title}' вже існує на цьому сервері!")
+
+        try:
+            new_channel = TextChannel(
+                server_id=server_id, 
+                title=title, 
+                slow_mode_delay=slow_mode,
+                is_locked=False
+            )
+            self.session.add(new_channel)
+            self.session.commit()
+            return new_channel
+        except Exception as e:
+            self.session.rollback() 
+            raise e
+
+    def delete_channel(self, channel_id: int):
+        channel = self.session.query(TextChannel).get(channel_id)
+        if channel:
+            self.session.delete(channel)
+            self.session.commit()
+            return True
+        return False
+
+    def get_channel_messages(self, channel_id: int):
+        return self.session.query(Message).filter_by(channel_id=channel_id).order_by(Message.timestamp.asc()).all()
+
+    def post_message(self, channel_id: int, author_id: int, content: str):
+        if not content.strip(): return None 
+        
+        new_msg = Message(
+            channel_id=channel_id,
+            author_id=author_id,
+            content=content,
+            metadata_json="{}"
+        )
+        self.session.add(new_msg)
+        self.session.commit()
+        return new_msg
+
+    def delete_message(self, message_id: int):
+        msg = self.session.query(Message).get(message_id)
+        if msg:
+            self.session.delete(msg)
+            self.session.commit()
+            return True
+        return False
+    
+    def get_server_members(self, server_id: int):
+        return self.session.query(Member).filter_by(server_id=server_id).all()
+
+    def get_member_by_id(self, member_id: int):
+        return self.session.query(Member).get(member_id)
+
+    def delete_member(self, member_id: int):
+        member = self.get_member_by_id(member_id)
+        if member:
+            server = member.server
+            self.session.delete(member)
+            if server.member_count > 0:
+                server.member_count -= 1
+            self.session.commit()
+            return True
+        return False
+
+    def update_member_nickname(self, member_id: int, new_nickname: str):
+        member = self.get_member_by_id(member_id)
+        if member:
+            member.nickname = new_nickname
+            self.session.commit()
+            return member
+        return None
+    
+    def add_member_to_server(self, server_id: int, email: str, nickname: str, name: str):
+        user = self.user_repo.get_by_email(email)
+        
+        if not user:
+            user = User(name=name, email=email, status="Online")
+            self.session.add(user)
+            self.session.flush()
+            
+        existing_member = self.session.query(Member).filter_by(
+            user_id=user.id, 
+            server_id=server_id
+        ).first()
+        
+        if existing_member:
+            raise ValueError(f"Користувач з email {email} вже є учасником цього сервера!")
+
+        try:
+            new_member = Member(
+                user_id=user.id,
+                server_id=server_id,
+                nickname=nickname,
+                is_muted=False
+            )
+            self.session.add(new_member)
+            
+            server = self.get_server_by_id(server_id)
+            server.member_count += 1
+            
+            self.session.commit()
+            return new_member
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        
+    def authenticate(self, email, password):
+        user = self.user_repo.get_by_email(email)
+        if user and user.check_password(password):
+            return user
+        return None
+    
+    def register_user(self, name, email, password):
+        existing = self.user_repo.get_by_email(email)
+        if existing:
+            raise ValueError("Ця електронна пошта вже зареєстрована!")
+        
+        new_user = User(name=name, email=email, status="Online", type="user")
+        new_user.set_password(password) 
+        
+        try:
+            self.session.add(new_user)
+            self.session.commit()
+            return new_user
+        except Exception as e:
+            self.session.rollback()
+            raise e

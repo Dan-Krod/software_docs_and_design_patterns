@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Admin | Panel</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/discord_logo.png') }}?v=1">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="discord-theme">
+
+    <aside class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <div class="alert-content">
+                    <span class="alert-icon">{{ '⚠️' if category == 'danger' else '✅' }}</span>
+                    {{ message }}
+                </div>
+                <div class="alert-progress"></div>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </aside>
+
+    <header class="main-header">
+        <div class="header-inner">
+            <div class="left-side">
+                <a class="logo-wrapper" href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='images/discord_logo.png') }}" alt="Logo" class="nav-logo">
+                    <span class="brand-name">Discord<span class="sub-name">Admin</span></span>
+                </a>
+            </div>
+            <nav class="right-side">
+                <nav class="right-side">
+                    {% if session.user_id %}
+                        <div class="header-actions">
+                            <a href="{{ url_for('add_server') }}" class="create-btn" title="Створити новий сервер">
+                                <i class="fas fa-plus-circle"></i>
+                                <span class="btn-text">Створити</span>
+                            </a>
+                        </div>
+
+                        <div class="nav-divider"></div>
+
+                        <div class="user-account-section">
+                            <div class="user-pill" title="Ваш профіль">
+                                <div class="user-avatar">
+                                    {{ session.user_name[0] | upper }}
+                                    <span class="status-indicator online"></span>
+                                </div>
+                                <div class="user-details">
+                                    <span class="user-name">{{ session.user_name }}</span>
+                                    <span class="user-role">Адміністратор</span>
+                                </div>
+                            </div>
+                            
+                            <a href="{{ url_for('logout') }}" class="logout-btn" title="Вийти з акаунта">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="auth-group">
+                            <a href="{{ url_for('login') }}" class="login-link">Увійти</a>
+                            <a href="{{ url_for('register') }}" class="register-btn">Зареєструватися</a>
+                        </div>
+                    {% endif %}
+                </nav>
+        </div>
+    </header>
+
+    <main class="page-viewport">
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="minimal-footer">
+        <div class="footer-inner">
+            <p class="copyright">&copy; 2026 Discord Admin System. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

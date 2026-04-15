@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}?v=4">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <div class="header-text">
+            <h1 class="page-title">Ваші сервери</h1>
+            <p class="page-subtitle">Керуйте спільнотами та налаштуваннями каналів</p>
+        </div>
+    </header>
+
+    <div class="servers-grid">
+        {% for server in servers %}
+        <article class="server-card">
+            <div class="card-glow"></div>
+            
+            <div class="card-content">
+                <div class="server-avatar">
+                    {{ server.name[0] | upper }}
+                </div>
+                
+                <div class="server-info">
+                    <h3 class="server-name">{{ server.name }}</h3>
+                    <div class="server-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-users"></i> {{ server.member_count }} учасників
+                        </span>
+                        <span class="code-pill">
+                             {{ server.invite_code }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{{ url_for('view_channels', server_id=server.id) }}" class="action-link view" title="Перейти до каналів">
+                        <i class="fas fa-arrow-right"></i> <span>Канали</span>
+                    </a>
+                    <div class="action-group">
+                        <a href="{{ url_for('edit_server', server_id=server.id) }}" class="icon-btn edit" title="Редагувати">
+                            <i class="fas fa-sliders-h"></i>
+                        </a>
+                        <a href="{{ url_for('delete_server', server_id=server.id) }}" 
+                           class="icon-btn delete" 
+                           onclick="return confirm('Видалити цей сервер?')" 
+                           title="Видалити">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% else %}
+        <div class="empty-dashboard">
+            <i class="fas fa-folder-open empty-icon"></i>
+            <h3>Серверів поки немає</h3>
+            <p>Створіть свій перший сервер, щоб почати роботу.</p>
+            <a href="{{ url_for('add_server') }}" class="action-button primary">Додати сервер</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
